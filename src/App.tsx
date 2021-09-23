@@ -3,7 +3,6 @@ import GitHubContainer from "./containers/GitHubContainer";
  const App=()=>{
     return (
     <div>
-        <h1>GitHub Management</h1>
         <GitHubContainer/>
     </div>
     )

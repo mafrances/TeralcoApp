@@ -2,6 +2,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -22,6 +24,10 @@ module.exports = {
     }),
     isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
+	new MiniCssExtractPlugin({
+      filename: "styles.css",
+      chunkFilename: "styles.css"
+    }),
   ],
   resolve: {
     modules: [__dirname, "src", "node_modules"],
@@ -41,7 +47,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader", "postcss-loader",
+          ],
       },
       {
         test: /\.png|svg|jpg|gif$/,
