@@ -1,8 +1,28 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { IIssueItem }  from "./ReposManager";
 
-class IssueDetails extends React.Component<any, any>{
-    constructor(props: any) {
+interface IIssueDetailsProps {
+    onItemClosed(): void;
+    item: IIssueItem;
+}
+
+interface IIssueDetailsState {
+    comments: IComment[];
+}
+
+interface IComment {
+    id: string;
+    body: string;
+    user: IUser;
+    created_at: string;
+}
+
+interface IUser {
+    login: string;
+}
+
+class IssueDetails extends React.Component<IIssueDetailsProps, IIssueDetailsState>{
+    constructor(props: IIssueDetailsProps) {
         super(props);
         this.state = {
             comments: []
@@ -20,7 +40,7 @@ class IssueDetails extends React.Component<any, any>{
                     throw Error(response.statusText);
                 }
                 return response.json();
-            }).then((result: any) => {
+            }).then((result: IComment[]) => {
                 this.setState({
                     comments: result
                 });
@@ -35,23 +55,29 @@ class IssueDetails extends React.Component<any, any>{
             comments.push(this.createListElement(item));
         }
         return (
-            <div>
-                <div>
-                    {this.props.item.title} - {this.props.item.body}
-                </div>
-                {comments}
-                <div>
-                    <button onClick={this.onItemClosed.bind(this)}>Close</button>
+            <div className="container max-w-screen-lg mx-auto">
+                <h2 className="font-semibold text-xl text-gray-600">Issue/Pull Request Details</h2>
+                <p className="text-gray-500 mb-6">Close to get back to the list</p>
+                <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
+                    <div>
+                        <h2 className="font-semibold text-xl text-gray-600">{this.props.item.title}</h2>
+                        {this.props.item.body}
+                    </div>
+                    {comments}
+                    <div>
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2" onClick={this.onItemClosed.bind(this)}>Close</button>
+                    </div>
                 </div>
             </div>
-            
         );
     }
 
-    createListElement(item: any) {
+    createListElement(item: IComment) {
         return (
-            <div key={item.id} id={item.id}>
-                {item.body} - {item.user.login} - {item.created_at}
+            <div key={item.id} id={item.id} className="bg-gray-100 rounded shadow-lg p-4 mb-6 flex">
+                <div className="pr-4 flex-grow">{item.body}</div>
+                <div className="pr-4">{item.user.login}</div>
+                <div className="pr-4">{item.created_at}</div>
             </div>
         );
     }

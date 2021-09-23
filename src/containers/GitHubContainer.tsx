@@ -2,26 +2,48 @@ import React from "react";
 import Login from "../components/Login"
 import IssueDetails from "../components/IssueDetails"
 import ReposManager from "../components/ReposManager"
+import { IIssueItem } from "../components/ReposManager";
 
-class GitHubContainer extends React.Component<{}, any>  {
-    constructor(props: any) {
+interface IReposManagerState {
+    isLoggedIn: boolean;
+    item?: IIssueItem;
+    repository?: IRepository;
+}
+
+export interface IRepository {
+    user: string;
+    repository: string;
+}
+
+class GitHubContainer extends React.Component<{}, IReposManagerState>  {
+    constructor(props: {}) {
         super(props);
         this.state = {
             isLoggedIn: false,
-            item: null
+            item: undefined,
+            repository: undefined
         };
     }
 
-    handleLoginClick() {
-        this.setState({ isLoggedIn: true });
+    handleLoginClick(user: string, repository: string) {
+        this.setState({
+            isLoggedIn: true,
+            repository: {
+                user,
+                repository
+            }
+        });
     }
 
-    onSelectItem(item: any) {
+    onSelectItem(item: IIssueItem) {
         this.setState({ item: item });
     }
 
     onItemClosed() {
-        this.setState({ item: null });
+        this.setState({
+            item: undefined,
+            isLoggedIn: true
+        });
     }
 
     render() {
@@ -30,7 +52,9 @@ class GitHubContainer extends React.Component<{}, any>  {
         if (!isLoggedIn) {
             button = <Login onLogin={this.handleLoginClick.bind(this)} />;
         } else {
-            button = <ReposManager onSelectItem={this.onSelectItem.bind(this)}/>
+            if (this.state.repository) {
+                button = <ReposManager onSelectItem={this.onSelectItem.bind(this)} repository={this.state.repository} />
+            }
         }
         if (this.state.item) {
             button = <IssueDetails item={this.state.item} onItemClosed={this.onItemClosed.bind(this)}/>
